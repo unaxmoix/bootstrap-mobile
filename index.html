@@ -4,49 +4,86 @@
   <meta charset="UTF-8">
   <title>Zerbait</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/bootstrap.css">
 </head>
-<body>
-    <script src="js/boostrap.esm.min.js"></script>
-    <script src="js/boostrap.bundle.min.js"></script>
-    <script src="js/boostrap.min.js"></script>
+<body class="bg-light">
 
-    <h1>GRADU AMAIERAKO LANAREN INGURUKO INFORMAZIOA</h1>
-    <br/>
-    <p>Ongi etorri GRALei buruzko informazio gune honetara!</p>
-    <p>Hemen aurkituko dituzu: araudi laburtua, deaildien eta epeen egutegia, horien buruzko autoebaluazio galdetegi bat, eta aurreko urteetako memorietarako sarbidea.</p>
-    <div class="btn-group" role="group" aria-label="Botoi taldea">
-        <button type="button" class="btn btn-primary">NOR GARA?</button>
-        <button type="button" class="btn btn-secondary">ARAUDIA</button>
-        <button type="button" class="btn btn-success">EGUTEGIA</button>
-        <button type="button" class="btn btn-primary">MEMORIAK</button>
-        <button type="button" class="btn btn-primary">AOTEBALUAZIOA</button>
+  <!-- Hero Section -->
+  <header class="py-5 text-center bg-white shadow-sm">
+    <div class="container">
+      <h1 class="display-5 fw-bold text-primary">GRADU AMAIERAKO LANAREN INGURUKO INFORMAZIOA</h1>
+      <p class="lead mt-3">Ongi etorri GRALei buruzko informazio gune honetara!</p>
+      <p class="text-muted">Hemen aurkituko dituzu: araudi laburtua, deialdien eta epeen egutegia, autoebaluazio galdetegi bat, eta aurreko urteetako memorietarako sarbidea.</p>
     </div>
+  </header>
 
-    <br/>
-    <br/>
-      <nav class="expand navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <div class="collapse navbar-collapse">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" href="#">NOR GARA?</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">ARAUDIA</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">EGUTEGIA</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">MEMORIAK</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">AUTOEBALUAZIOA</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+<!-- Navbar -->
+<nav class="bg-light border-top border-bottom shadow-sm">
+  <div class="container justify-content-center">
+    <ul class="nav nav-pills justify-content-center" id="navMenu">
+      <li class="nav-item"><button class="nav-link active" onclick="loadContent('nor.html', this)">NOR GARA?</button></li>
+      <li class="nav-item"><button class="nav-link" onclick="loadContent('araudia.html', this)">ARAUDIA</button></li>
+      <li class="nav-item"><button class="nav-link" onclick="loadContent('egutegia.html', this)">EGUTEGIA</button></li>
+      <li class="nav-item"><button class="nav-link" onclick="loadContent('memoriak.html', this)">MEMORIAK</button></li>
+      <li class="nav-item"><button class="nav-link" onclick="loadContent('auto.html', this)">AUTOEBALUAZIOA</button></li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Contenido dinámico -->
+  <main class="container my-5" id="content">
+    <!-- Aquí se cargará el contenido externo -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white text-center py-3 mt-5">
+    <p>ⓘ Webgune hau GrALei buruzko informazioa eskaintzeko sortu dugu, eskola ariketa moduan.</p>
+    <p class="mb-0">© 2025 GRAL Info - e-BUM</p>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+    function loadContent(file, btn) {
+      fetch(file)
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('content').innerHTML = html;
+  
+          // Quitar 'active' de todos los botones
+          document.querySelectorAll('#navMenu .nav-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          btn.classList.add('active');
+  
+          // Si hemos cargado araudia.html, enganchar el botón toggleAll
+          if (file === 'araudia.html') {
+            const toggleBtn = document.getElementById('toggleAll');
+            if (toggleBtn) {
+              toggleBtn.addEventListener('click', function() {
+                const items = document.querySelectorAll('#araudiaAccordion .accordion-collapse');
+                const allOpen = Array.from(items).every(item => item.classList.contains('show'));
+                items.forEach(item => {
+                  const collapse = new bootstrap.Collapse(item, { toggle: false });
+                  if (allOpen) {
+                    collapse.hide();
+                  } else {
+                    collapse.show();
+                  }
+                });
+              });
+            }
+          }
+        })
+        .catch(err => {
+          document.getElementById('content').innerHTML = "<p>Error al cargar el contenido.</p>";
+        });
+    }
+  
+    // Cargar por defecto la primera pestaña
+    loadContent('nor.html', document.querySelector('#navMenu .nav-link.active'));
+  </script>
+  
+
+
 </body>
 </html>
