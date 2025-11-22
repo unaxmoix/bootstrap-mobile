@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+  <meta charset="UTF-8" />
+  <title>GrAL-ko Autoebaluazioa - Kahoot Style</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    .center-screen {
+      min-height: 60vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:1rem;
+    }
+
+    .question-card {
+      display: none;
+      animation: fadeIn 0.45s ease;
+    }
+
+    .question-card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .kahoot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .answer-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.6rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      color: white;
+      user-select: none;
+      min-height: 72px;
+    }
+
+    .answer-btn:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
+
+    .answer-btn.selected {
+      box-shadow: 0 0 0 6px rgba(255,255,255,0.12) inset;
+      transform: scale(1.03);
+      outline: 3px solid rgba(255,255,255,0.12);
+    }
+
+    .a1 { background: linear-gradient(135deg,#e75b57,#d43b2e); }
+    .a2 { background: linear-gradient(135deg,#2b8fd8,#015fa7); }
+    .a3 { background: linear-gradient(135deg,#f2b46b,#e08a1b); }
+    .a4 { background: linear-gradient(135deg,#6fd08a,#2f9f59); }
+
+    #nav-buttons { margin-top: 2rem; }
+    #nav-buttons button { min-width: 140px; }
+
+    .result-card {
+      background: #fff;
+      color: #111;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      animation: pop 0.45s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #retry-btn {
+      margin-top: 1.25rem;
+      font-size: 1.1rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+    }
+
+    .gif-container img {
+      max-width: 220px;
+      margin-top: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      background: #fff;
+    }
+
+    .small-muted { opacity: 0.85; color: rgba(255,255,255,0.85); }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+    <!-- PANTALLA INICIAL -->
+    <div id="start-screen" class="center-screen text-center text-white">
+      <div>
+        <h1 class="fw-bold mb-2">GrAL-ko Autoebaluazioa</h1>
+        <p class="mb-3 small-muted">Hasi botoia sakatu eta ekin galdetegiari!</p>
+        <button id="start-btn" class="btn btn-lg btn-light">⮕ Hasi ⬅</button>
+      </div>
+    </div>
+
+    <!-- CONTENIDO DE LAS PREGUNTAS (OCULTO HASTA START) -->
+    <div id="quiz-screen" class="d-none">
+      <div class="text-center mb-4">
+        <h2 class="mb-1">GrAL-ko Autoebaluazioa</h2>
+     </div>
+
+      <div id="warning" class="alert alert-danger d-none">⚠️ Galdera falta da! Lehen galdera erantzun gabe dagoenera eramango zaitut.</div>
+
+      <div id="questions">
+        <!-- PREGUNTA 1 -->
+        <div class="question-card active">
+          <h4 class="mb-3">1. GrAL ez da derrigorrezkoa gradu guztietan titulua lortzeko. *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="0">Zuzena</div>
+            <div class="answer-btn a2" data-value="correct" data-q="0">Faltsua</div>
+            <!-- Espacios vacíos opcionales -->
+            <div style="visibility:hidden"></div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <!-- PREGUNTA 2 -->
+        <div class="question-card">
+          <h4 class="mb-3">2. GrALaren defentsa presentziala eta publikoa da beti? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="1">Zuzena</div>
+            <div class="answer-btn a2" data-value="wrong" data-q="1">Faltsua, mugikortasun-programetan beste unibertsitate batean egin behar da</div>
+            <div class="answer-btn a3" data-value="correct" data-q="1">Faltsua, mugikortasun-programetan beste unibertsitate batean egin daiteke, aldez aurreko akordioa badago</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="1">Faltsua, ikaslea gaixo badago</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">3. GrAL egin eta defenda daiteke... *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="2">Gaztelaniaz bakarrik</div>
+            <div class="answer-btn a2" data-value="correct" data-q="2">Autonomia-erkidegoko edozein hizkuntza ofizialetan eta ikasketa-planean aurreikusitako hizkuntzetan</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="2">Atzerriko edozein hizkuntzatan, baldintzarik gabe</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="2">Epaimahaiak onartzen duen edozein hizkuntzatan</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">4. Nola matrikulatzen da GrAL? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="correct" data-q="3">Irakasgai baten modura, matrikula-epe ofizialaren barruan, nahiz eta ikasleak irakasgai guztiak gaindituak ez izan</div>
+            <div class="answer-btn a2" data-value="wrong" data-q="3">Modu independentean, matrikula orokorrarekin loturarik gabe</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="3">Irakasgai baten modura, matrikula-epe ofizialaren barruan, soilik ikasleak irakasgai guztiak gaindituak baditu</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="3">Automatikoaki, laugarren kurtsonara ailegatzen zarenean</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">5. Zenbat kreditu ematen ditu GrALak? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="4">3 eta 6 ECTS artean</div>
+            <div class="answer-btn a2" data-value="correct" data-q="4">6 eta 18 ECTS artean</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="4">18 eta 30 ECTS artean</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="4">4 eta 10 ECTS artean</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">6. Zenbat deialdietan aurkez daiteke GrALaren defentsara ikaslea ikasturte akademiko bakoitzean? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="5">Deialdi ofizial bakarrean</div>
+            <div class="answer-btn a2" data-value="correct" data-q="5">Bi deialdi ofizialetan</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="5">Lau deialdi ofizialetan</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="5">Hiru deialdi ofizialetan</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">7. GrAL bakoitza zuzendari baten gainbegiradapean garatu behar da, eta ezin da aurkeztu haren oniritzirik gabe. *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="correct" data-q="6">Zuzena</div>
+            <div class="answer-btn a2" data-value="wrong" data-q="6">Faltsua</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">8. Zein da GrAL baten helburu nagusia? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="correct" data-q="7">Ikaslearen gaitasunak ebaluatzea</div>
+            <div class="answer-btn a2" data-value="wrong" data-q="7">Irakaslearen lan erraztasuna neurtzea</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="7">Emaitza akademikoak soilik jasotzea</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="7">Lanean jasoko dituzun lan motetara ohitzea</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">9. Nor da GrALen gaiaren aukeraketa onartzen duen pertsona nagusia? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="8">Ikaslea</div>
+            <div class="answer-btn a2" data-value="correct" data-q="8">Zuzendaria</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="8">Fakultateko dekanoa</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="8">Halabeharrez aukeratzen den irakasle bat</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">10. Ohorezko matrikularen aipamena: *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="9">10eko notak lortzen dutenei ematen zaie beti</div>
+            <div class="answer-btn a2" data-value="correct" data-q="9">Salbuespenezkoa da, eta fakultateak onartzen duenaren araberakoa</div>
+            <div class="answer-btn a3" data-value="wrong" data-q="9">GrALean ez dago halakorik</div>
+            <div class="answer-btn a4" data-value="wrong" data-q="9">Unibersitate pribatuetan soilik existitzen da</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h4 class="mb-3">11. Zenbat kidez osatuta dago epaimahaia? *</h4>
+          <div class="kahoot-grid">
+            <div class="answer-btn a1" data-value="wrong" data-q="10">1</div>
+            <div class="answer-btn a2" data-value="wrong" data-q="10">2</div>
+            <div class="answer-btn a3" data-value="correct" data-q="10">3</div>
+            <div class="answer-btn a4" data-value="correct" data-q="10">4</div>
+            <div style="visibility:hidden"></div>
+          </div>
+        </div>
+    </div>
+
+
+      <!-- NAV -->
+      <div id="nav-buttons" class="d-flex justify-content-between align-items-center">
+        <button id="prev-btn" class="btn btn-light" disabled>⭠ Aurrekoa</button>
+
+        <div>
+          <button id="next-btn" class="btn btn-light">Hurrengoa ⭢</button>
+          <button id="finish-btn" class="btn btn-success d-none">🎯 Amaitu</button>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div id="summary" class="d-none mt-5 text-center">
+        <h3 class="fw-bold">📊 Emaitzak</h3>
+        <div id="results" class="mt-4"></div>
+        <h4 id="score" class="mt-3"></h4>
+
+        <button id="retry-btn" class="btn btn-outline-light" title="Berreskuratu quiz-a">🔁 Saiatu berriro!</button>
+
+        <div class="gif-container mt-3">
+          <img id="result-gif" src="" alt="gif" />
+        </div>
+      </div>
+    </div>
+  </div>

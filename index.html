@@ -4,7 +4,17 @@
   <meta charset="UTF-8">
   <title>Zerbait</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  <style>
+    /* Hace que la navbar esté siempre visible */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+  </style>
 </head>
+
 <body class="bg-light">
 
   <!-- Hero Section -->
@@ -16,19 +26,18 @@
     </div>
   </header>
 
-<!-- Navbar -->
-<nav class="bg-light border-top border-bottom shadow-sm">
-  <div class="container justify-content-center">
-    <ul class="nav nav-pills justify-content-center" id="navMenu">
-      <li class="nav-item"><button class="nav-link active" onclick="loadContent('nor.html', this)">NOR GARA?</button></li>
-      <li class="nav-item"><button class="nav-link" onclick="loadContent('araudia.html', this)">ARAUDIA</button></li>
-      <li class="nav-item"><button class="nav-link" onclick="loadContent('egutegia.html', this)">EGUTEGIA</button></li>
-      <li class="nav-item"><button class="nav-link" onclick="loadContent('memoriak.html', this)">MEMORIAK</button></li>
-      <li class="nav-item"><button class="nav-link" onclick="loadContent('auto.html', this)">AUTOEBALUAZIOA</button></li>
-    </ul>
-  </div>
-</nav>
-
+  <!-- Navbar fija -->
+  <nav class="bg-light border-top border-bottom shadow-sm">
+    <div class="container justify-content-center">
+      <ul class="nav nav-pills justify-content-center" id="navMenu">
+        <li class="nav-item"><button class="nav-link active" onclick="loadContent('nor.html', this)">NOR GARA?</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="loadContent('araudia.html', this)">ARAUDIA</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="loadContent('egutegia.html', this)">EGUTEGIA</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="loadContent('memoriak.html', this)">MEMORIAK</button></li>
+        <li class="nav-item"><button class="nav-link" onclick="loadContent('autoebaluazioa.html', this)">AUTOEBALUAZIOA</button></li>
+      </ul>
+    </div>
+  </nav>
 
   <!-- Contenido dinámico -->
   <main class="container my-5" id="content">
@@ -42,20 +51,21 @@
   </footer>
 
   <script src="js/bootstrap.bundle.min.js"></script>
+
   <script>
     function loadContent(file, btn) {
       fetch(file)
         .then(response => response.text())
         .then(html => {
           document.getElementById('content').innerHTML = html;
-  
-          // Quitar 'active' de todos los botones
+
+          // Cambiar botón activo
           document.querySelectorAll('#navMenu .nav-link').forEach(link => {
             link.classList.remove('active');
           });
           btn.classList.add('active');
-  
-          // Si hemos cargado araudia.html, enganchar el botón toggleAll
+
+          // --- Lógica especial para Araudia ---
           if (file === 'araudia.html') {
             const toggleBtn = document.getElementById('toggleAll');
             if (toggleBtn) {
@@ -64,26 +74,132 @@
                 const allOpen = Array.from(items).every(item => item.classList.contains('show'));
                 items.forEach(item => {
                   const collapse = new bootstrap.Collapse(item, { toggle: false });
-                  if (allOpen) {
-                    collapse.hide();
-                  } else {
-                    collapse.show();
-                  }
+                  allOpen ? collapse.hide() : collapse.show();
                 });
               });
             }
           }
+
+          // --- Lógica para Autoebaluazioa ---
+          if (file === 'autoebaluazioa.html') {
+            const startScreen = document.getElementById('start-screen');
+            const startBtn = document.getElementById('start-btn');
+            const quizScreen = document.getElementById('quiz-screen');
+            const cards = document.querySelectorAll('.question-card');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            const warning = document.getElementById('warning');
+            const summary = document.getElementById('summary');
+            const resultsDiv = document.getElementById('results');
+            const scoreEl = document.getElementById('score');
+            const resultGif = document.getElementById('result-gif');
+            const retryBtn = document.getElementById('retry-btn');
+
+            let current = 0;
+            let answers = Array.from(cards).map(_=>null);
+
+            // Iniciar
+            startBtn.addEventListener('click', () => {
+              startScreen.classList.add('d-none');
+              quizScreen.classList.remove('d-none');
+              showCard(0);
+            });
+
+            // Respuestas (no avanza auto)
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const q = Number(btn.dataset.q);
+                const all = document.querySelectorAll(`.answer-btn[data-q='${q}']`);
+                all.forEach(a => a.classList.remove('selected'));
+                btn.classList.add('selected');
+                answers[q] = btn.dataset.value;
+                warning.classList.add('d-none');
+              });
+            });
+
+            function showCard(index) {
+              if (index < 0) index = 0;
+              if (index > cards.length - 1) index = cards.length - 1;
+              cards.forEach(c => c.classList.remove('active'));
+              cards[index].classList.add('active');
+              current = index;
+              prevBtn.disabled = current === 0;
+              nextBtn.classList.toggle('d-none', current === cards.length - 1);
+              finishBtn.classList.toggle('d-none', current !== cards.length - 1);
+            }
+
+            prevBtn.addEventListener('click', () => showCard(current - 1));
+            nextBtn.addEventListener('click', () => showCard(current + 1));
+
+            finishBtn.addEventListener('click', () => {
+              const missing = answers.indexOf(null);
+              if (missing !== -1) {
+                warning.classList.remove('d-none');
+                showCard(missing);
+                return;
+              }
+              console.log("ALEEEHOP");
+              document.getElementById('questions').classList.add('d-none');
+              document.getElementById('nav-buttons').classList.add('d-none');
+              summary.classList.remove('d-none');
+              console.log("APA");
+              resultsDiv.innerHTML = '';
+              let correct = 0;
+
+              cards.forEach((card, i) => {
+                const qText = card.querySelector('h4') ? card.querySelector('h4').innerText : `Galdera ${i+1}`;
+                const isCorrect = answers[i] === 'correct';
+                if (isCorrect) correct++;
+
+                const wrap = document.createElement('div');
+                wrap.className = 'result-card text-start';
+                wrap.innerHTML = `
+                  <strong>${qText}</strong>
+                  <p class="${isCorrect ? 'text-success' : 'text-danger'} mb-0">
+                    ${isCorrect ? '✅ Zuzena' : '❌ Okerra'}
+                  </p>
+                `;
+                resultsDiv.appendChild(wrap);
+              });
+
+              scoreEl.innerHTML = `✅ ${correct} | ❌ ${answers.length - correct}`;
+
+              if (correct === answers.length) {
+                resultGif.src = 'https://media4.giphy.com/media/111ebonMs90YLu/giphy.gif';
+              } else if (correct >= answers.length / 2) {
+                resultGif.src = 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjB5eWdtdDRmeGM1MHgwOTV4NDB5cmJxZWpibXVpbTd1dGpidWVoNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fDbzXb6Cv5L56/giphy.gif';
+              } else {
+                resultGif.src = 'https://media3.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif';
+              }
+            });
+
+            retryBtn.addEventListener('click', () => {
+              answers = Array.from(cards).map(_=>null);
+              document.querySelectorAll('.answer-btn').forEach(a => a.classList.remove('selected'));
+              summary.classList.add('d-none');
+              document.getElementById('questions').classList.remove('d-none');
+              document.getElementById('nav-buttons').classList.remove('d-none');
+              showCard(0);
+              resultsDiv.innerHTML = '';
+              scoreEl.innerHTML = '';
+              resultGif.src = '';
+            });
+
+            (function init() {
+              showCard(0);
+              quizScreen.classList.add('d-none');
+              summary.classList.add('d-none');
+            })();
+          }
         })
         .catch(err => {
-          document.getElementById('content').innerHTML = "<p>Error al cargar el contenido.</p>";
+          document.getElementById('content').innerHTML = "<p>Errorea kargatzerakoan.</p>";
         });
     }
-  
-    // Cargar por defecto la primera pestaña
+
     loadContent('nor.html', document.querySelector('#navMenu .nav-link.active'));
   </script>
-  
-
 
 </body>
 </html>
