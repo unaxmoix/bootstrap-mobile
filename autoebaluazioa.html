@@ -109,37 +109,32 @@
 
 <body>
   <div class="container py-5">
-    <!-- PANTALLA INICIAL -->
     <div id="start-screen" class="center-screen text-center text-white">
       <div>
-        <h1 class="fw-bold mb-2">GrAL-ko Autoebaluazioa</h1>
+        <h1 class="fw-bold mb-2">GrALeko Autoebaluazioa</h1>
         <p class="mb-3 small-muted">Hasi botoia sakatu eta ekin galdetegiari!</p>
         <button id="start-btn" class="btn btn-lg btn-light">⮕ Hasi ⬅</button>
       </div>
     </div>
 
-    <!-- CONTENIDO DE LAS PREGUNTAS (OCULTO HASTA START) -->
     <div id="quiz-screen" class="d-none">
       <div class="text-center mb-4">
-        <h2 class="mb-1">GrAL-ko Autoebaluazioa</h2>
+        <h2 class="mb-1">GrALeko Autoebaluazioa</h2>
      </div>
 
       <div id="warning" class="alert alert-danger d-none">⚠️ Galdera falta da! Lehen galdera erantzun gabe dagoenera eramango zaitut.</div>
 
       <div id="questions">
-        <!-- PREGUNTA 1 -->
         <div class="question-card active">
           <h4 class="mb-3">1. GrAL ez da derrigorrezkoa gradu guztietan titulua lortzeko. *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="0">Zuzena</div>
             <div class="answer-btn a2" data-value="correct" data-q="0">Faltsua</div>
-            <!-- Espacios vacíos opcionales -->
             <div style="visibility:hidden"></div>
             <div style="visibility:hidden"></div>
           </div>
         </div>
 
-        <!-- PREGUNTA 2 -->
         <div class="question-card">
           <h4 class="mb-3">2. GrALaren defentsa presentziala eta publikoa da beti? *</h4>
           <div class="kahoot-grid">
@@ -250,7 +245,6 @@
     </div>
 
 
-      <!-- NAV -->
       <div id="nav-buttons" class="d-flex justify-content-between align-items-center">
         <button id="prev-btn" class="btn btn-light" disabled>⭠ Aurrekoa</button>
 
@@ -260,7 +254,6 @@
         </div>
       </div>
 
-      <!-- SUMMARY -->
       <div id="summary" class="d-none mt-5 text-center">
         <h3 class="fw-bold">📊 Emaitzak</h3>
         <div id="results" class="mt-4"></div>

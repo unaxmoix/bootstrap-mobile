@@ -2,11 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Zerbait</title>
+  <title>GrALari buruzko GIDA</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
 
   <style>
-    /* Hace que la navbar esté siempre visible */
     nav {
       position: sticky;
       top: 0;
@@ -17,16 +16,16 @@
 
 <body class="bg-light">
 
-  <!-- Hero Section -->
+
   <header class="py-5 text-center bg-white shadow-sm">
     <div class="container">
       <h1 class="display-5 fw-bold text-primary">GRADU AMAIERAKO LANAREN INGURUKO INFORMAZIOA</h1>
-      <p class="lead mt-3">Ongi etorri GRALei buruzko informazio gune honetara!</p>
+      <p class="lead mt-3">Ongi etorri GrALei buruzko informazio gune honetara!</p>
       <p class="text-muted">Hemen aurkituko dituzu: araudi laburtua, deialdien eta epeen egutegia, autoebaluazio galdetegi bat, eta aurreko urteetako memorietarako sarbidea.</p>
     </div>
   </header>
 
-  <!-- Navbar fija -->
+
   <nav class="bg-light border-top border-bottom shadow-sm">
     <div class="container justify-content-center">
       <ul class="nav nav-pills justify-content-center" id="navMenu">
@@ -39,15 +38,14 @@
     </div>
   </nav>
 
-  <!-- Contenido dinámico -->
+  
   <main class="container my-5" id="content">
-    <!-- Aquí se cargará el contenido externo -->
   </main>
 
-  <!-- Footer -->
+  
   <footer class="bg-primary text-white text-center py-3 mt-5">
     <p>ⓘ Webgune hau GrALei buruzko informazioa eskaintzeko sortu dugu, eskola ariketa moduan.</p>
-    <p class="mb-0">© 2025 GRAL Info - e-BUM</p>
+    <p class="mb-0">© 2025 GrAL Info - e-BUM</p>
   </footer>
 
   <script src="js/bootstrap.bundle.min.js"></script>
@@ -59,13 +57,11 @@
         .then(html => {
           document.getElementById('content').innerHTML = html;
 
-          // Cambiar botón activo
           document.querySelectorAll('#navMenu .nav-link').forEach(link => {
             link.classList.remove('active');
           });
           btn.classList.add('active');
 
-          // --- Lógica especial para Araudia ---
           if (file === 'araudia.html') {
             const toggleBtn = document.getElementById('toggleAll');
             if (toggleBtn) {
@@ -80,7 +76,6 @@
             }
           }
 
-          // --- Lógica para Autoebaluazioa ---
           if (file === 'autoebaluazioa.html') {
             const startScreen = document.getElementById('start-screen');
             const startBtn = document.getElementById('start-btn');
@@ -99,14 +94,12 @@
             let current = 0;
             let answers = Array.from(cards).map(_=>null);
 
-            // Iniciar
             startBtn.addEventListener('click', () => {
               startScreen.classList.add('d-none');
               quizScreen.classList.remove('d-none');
               showCard(0);
             });
 
-            // Respuestas (no avanza auto)
             document.querySelectorAll('.answer-btn').forEach(btn => {
               btn.addEventListener('click', () => {
                 const q = Number(btn.dataset.q);
