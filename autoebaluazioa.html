@@ -64,7 +64,7 @@
       color: white;
       user-select: none;
       min-height: 72px;
-      border: 4px solid transparent; /* Preparado para el borde */
+      border: 4px solid transparent; 
       text-align: center;
     }
 
@@ -74,22 +74,20 @@
       z-index: 10;
     }
 
-    /* --- ESTILOS DE SELECCIÓN MEJORADOS --- */
-    
-    /* Cuando una respuesta está seleccionada */
+  
     .answer-btn.selected {
       transform: scale(1.05);
-      border-color: #fff; /* Borde blanco grueso */
+      border-color: #fff; 
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
       z-index: 10;
     }
 
-    /* Cuando el contenedor tiene alguna seleccionada, oscurecemos las NO seleccionadas */
+  
     .kahoot-grid.has-selection .answer-btn:not(.selected) {
       opacity: 0.4;
       transform: scale(0.95);
     }
-    /* -------------------------------------- */
+  
 
     .a1 { background: linear-gradient(135deg,#e75b57,#d43b2e); }
     .a2 { background: linear-gradient(135deg,#2b8fd8,#015fa7); }
@@ -135,7 +133,6 @@
 
     .small-muted { opacity: 0.85; color: rgba(255,255,255,0.85); }
     
-    /* Feedback text styles */
     .feedback-correct { color: #198754; font-weight: bold; }
     .feedback-wrong { color: #dc3545; font-weight: bold; }
     .feedback-info { font-size: 0.95rem; margin-top: 5px; color: #555; }
@@ -270,7 +267,7 @@
             <div class="answer-btn a4" data-value="correct" data-q="10">4</div>
           </div>
         </div>
-      </div>
+      </div>  
 
       <div id="nav-buttons" class="d-flex justify-content-between align-items-center">
         <button id="prev-btn" class="btn btn-light" disabled>⬅ Aurrekoa</button>
@@ -297,14 +294,11 @@
   </div>
 
   <script>
-    // Variables de Estado
     let currentStep = 0;
     const cards = document.querySelectorAll('.question-card');
     const totalQuestions = cards.length;
-    // Guardamos las respuestas del usuario: { indicePregunta: elementoBoton }
     const userAnswers = {}; 
 
-    // Referencias DOM
     const startScreen = document.getElementById('start-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const startBtn = document.getElementById('start-btn');
@@ -319,39 +313,27 @@
     const retryBtn = document.getElementById('retry-btn');
     const navButtons = document.getElementById('nav-buttons');
 
-    // --- LOGICA DE INICIO ---
     startBtn.addEventListener('click', () => {
       startScreen.classList.add('d-none');
       quizScreen.classList.remove('d-none');
       updateView();
     });
 
-    // --- LOGICA DE SELECCION (Mejorada visualmente) ---
     document.querySelectorAll('.answer-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const qIndex = parseInt(btn.getAttribute('data-q'));
         const parentGrid = btn.closest('.kahoot-grid');
         
-        // 1. Quitar clase 'selected' a hermanos
-        parentGrid.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
-        
-        // 2. Añadir clase 'selected' al clickado
-        btn.classList.add('selected');
-        
-        // 3. Añadir clase al padre para oscurecer los no seleccionados
-        parentGrid.classList.add('has-selection');
 
-        // 4. Guardar respuesta
+        parentGrid.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');    
+        parentGrid.classList.add('has-selection');
         userAnswers[qIndex] = btn;
-        
-        // Ocultar warning si se selecciona algo
         warningDiv.classList.add('d-none');
       });
     });
 
-    // --- NAVEGACION ---
     nextBtn.addEventListener('click', () => {
-      // Validar si ha respondido
       if (!userAnswers[currentStep]) {
         warningDiv.classList.remove('d-none');
         warningDiv.innerText = "⚠️ Mesedez, aukeratu erantzun bat jarraitzeko!";
@@ -374,7 +356,6 @@
     });
 
     function updateView() {
-      // Mostrar tarjeta actual
       cards.forEach((card, index) => {
         if (index === currentStep) {
           card.classList.add('active');
@@ -383,7 +364,6 @@
         }
       });
 
-      // Controlar botones
       prevBtn.disabled = (currentStep === 0);
       
       if (currentStep === totalQuestions - 1) {
@@ -395,9 +375,7 @@
       }
     }
 
-    // --- FINALIZAR Y RESULTADOS ---
     finishBtn.addEventListener('click', () => {
-       // Validar última pregunta
        if (!userAnswers[currentStep]) {
         warningDiv.classList.remove('d-none');
         warningDiv.innerText = "⚠️ Mesedez, aukeratu erantzun bat amaitzeko!";
@@ -408,12 +386,10 @@
     });
 
     function showResults() {
-      // Ocultar preguntas y navegación
       document.getElementById('questions').classList.add('d-none');
       navButtons.classList.add('d-none');
-      warningDiv.classList.add('d-none'); // Asegurar que no hay alertas
+      warningDiv.classList.add('d-none'); 
 
-      // Calcular nota y generar HTML detallado
       let score = 0;
       let resultsHTML = '';
 
@@ -424,12 +400,9 @@
         
         if (isCorrect) score++;
 
-        // Buscar texto de la respuesta correcta (para mostrar si falla)
-        // Buscamos dentro de la carta, el botón con data-value="correct"
         const correctBtn = card.querySelector('.answer-btn[data-value="correct"]');
         const correctAnswerText = correctBtn ? correctBtn.innerText : "Erantzun ezezaguna";
 
-        // Construir la tarjeta de resultado
         resultsHTML += `
           <div class="result-card ${isCorrect ? 'correct' : 'wrong'}">
             <strong>${questionText}</strong>
@@ -445,29 +418,24 @@
         `;
       });
 
-      // Inyectar HTML
       resultsDiv.innerHTML = resultsHTML;
       scoreText.innerText = `${score} / ${totalQuestions}`;
       summaryDiv.classList.remove('d-none');
 
-      // Gif lógica
       resultGif.classList.remove('d-none');
       if (score === totalQuestions) {
-        resultGif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; // Winner
+        resultGif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; 
       } else if (score >= totalQuestions / 2) {
-        resultGif.src = "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"; // Not bad
+        resultGif.src = "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"; 
       } else {
-        resultGif.src = "https://media.giphy.com/media/26ybfv79tOrD9yKUU/giphy.gif"; // Fail
+        resultGif.src = "https://media.giphy.com/media/26ybfv79tOrD9yKUU/giphy.gif"; 
       }
     }
 
-    // --- REINICIAR ---
     retryBtn.addEventListener('click', () => {
-      // Reset variables
       currentStep = 0;
       for (let key in userAnswers) delete userAnswers[key];
       
-      // Limpiar UI
       document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
       document.querySelectorAll('.kahoot-grid').forEach(g => g.classList.remove('has-selection'));
       
