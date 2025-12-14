@@ -60,7 +60,19 @@ function loadContent(file, btn) {
       document.querySelectorAll('#navMenu .nav-link')
         .forEach(link => link.classList.remove('active'));
       btn.classList.add('active');
-
+      if (file === 'araudia.html') {
+            const toggleBtn = document.getElementById('toggleAll');
+            if (toggleBtn) {
+              toggleBtn.addEventListener('click', function() {
+                const items = document.querySelectorAll('#araudiaAccordion .accordion-collapse');
+                const allOpen = Array.from(items).every(item => item.classList.contains('show'));
+                items.forEach(item => {
+                  const collapse = new bootstrap.Collapse(item, { toggle: false });
+                  allOpen ? collapse.hide() : collapse.show();
+                });
+              });
+            }
+          }
       if (file === 'autoebaluazioa.html') {
 
         const startScreen = document.getElementById('start-screen');
