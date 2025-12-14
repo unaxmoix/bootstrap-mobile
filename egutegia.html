@@ -1,4 +1,28 @@
 <!-- Bootstrap 5.3.8 card with large text under H3 and PDF embed below -->
+<style>
+  @media (max-width: 768px) {
+  embed {
+    display: none;
+  }
+}
+  .pdf-preview-img {
+  display: none;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+@media (max-width: 768px) {
+  .pdf-embed {
+    display: none;
+  }
+
+  .pdf-preview-img {
+    display: block;
+  }
+}</style>
 <h3 class="text-primary mb-4 fw-bold">EGUTEGIA</h3>
 <div class="card shadow-sm border-0">
   <div class="card-body p-4">
@@ -24,7 +48,8 @@
         🗓️  Hemen duzuna 2024/25 ikasturteko egutegia da.
       </div>
       <div class="card-body">
-        <embed src="pdf/egutegia.pdf" type="application/pdf" width="100%" height="400px" />
+        <embed src="pdf/egutegia.pdf" type="application/pdf" width="100%" height="400px" class="pdf-embed" />
+        <img src="irudiak/Egutegia.jpg" alt="PDF preview" class="pdf-preview-img">
         <a href="pdf/egutegia.pdf" target="_blank" class="btn btn-danger mt-2">➜ Ikusi</a>
       </div>
     </div>
