@@ -15,11 +15,11 @@
 
     .center-screen {
       min-height: 60vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     .question-card {
@@ -52,19 +52,36 @@
       font-weight: 700;
       border-radius: 14px;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: all 0.2s ease;
       color: white;
       user-select: none;
       min-height: 72px;
+      border: 4px solid transparent; /* Preparado para el borde */
+      text-align: center;
     }
 
-    .answer-btn:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
+    .answer-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+      z-index: 10;
+    }
 
+    /* --- ESTILOS DE SELECCIÓN MEJORADOS --- */
+    
+    /* Cuando una respuesta está seleccionada */
     .answer-btn.selected {
-      box-shadow: 0 0 0 6px rgba(255,255,255,0.12) inset;
-      transform: scale(1.03);
-      outline: 3px solid rgba(255,255,255,0.12);
+      transform: scale(1.05);
+      border-color: #fff; /* Borde blanco grueso */
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      z-index: 10;
     }
+
+    /* Cuando el contenedor tiene alguna seleccionada, oscurecemos las NO seleccionadas */
+    .kahoot-grid.has-selection .answer-btn:not(.selected) {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+    /* -------------------------------------- */
 
     .a1 { background: linear-gradient(135deg,#e75b57,#d43b2e); }
     .a2 { background: linear-gradient(135deg,#2b8fd8,#015fa7); }
@@ -78,10 +95,15 @@
       background: #fff;
       color: #111;
       border-radius: 10px;
-      padding: 1rem;
+      padding: 1.5rem;
       margin-bottom: 1rem;
       animation: pop 0.45s ease;
+      text-align: left;
+      border-left: 8px solid #ccc;
     }
+
+    .result-card.correct { border-left-color: #2f9f59; background-color: #f0fff4; }
+    .result-card.wrong { border-left-color: #d43b2e; background-color: #fff5f5; }
 
     @keyframes pop {
       0% { transform: scale(0.85); opacity: 0; }
@@ -104,11 +126,17 @@
     }
 
     .small-muted { opacity: 0.85; color: rgba(255,255,255,0.85); }
+    
+    /* Feedback text styles */
+    .feedback-correct { color: #198754; font-weight: bold; }
+    .feedback-wrong { color: #dc3545; font-weight: bold; }
+    .feedback-info { font-size: 0.95rem; margin-top: 5px; color: #555; }
   </style>
 </head>
 
 <body>
   <div class="container py-5">
+    
     <div id="start-screen" class="center-screen text-center text-white">
       <div>
         <h1 class="fw-bold mb-2">GrALeko Autoebaluazioa</h1>
@@ -122,11 +150,11 @@
         <h2 class="mb-1">GrALeko Autoebaluazioa</h2>
      </div>
 
-      <div id="warning" class="alert alert-danger d-none">⚠️ Galdera falta da! Lehen galdera erantzun gabe dagoenera eramango zaitut.</div>
+      <div id="warning" class="alert alert-danger d-none">⚠️ Galdera hau erantzun gabe dago! Mesedez, aukeratu bat jarraitzeko.</div>
 
       <div id="questions">
         <div class="question-card active">
-          <h4 class="mb-3">1. GrAL ez da derrigorrezkoa gradu guztietan titulua lortzeko. *</h4>
+          <h4 class="mb-3">1/11 GrAL ez da derrigorrezkoa gradu guztietan titulua lortzeko. *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="0">Zuzena</div>
             <div class="answer-btn a2" data-value="correct" data-q="0">Faltsua</div>
@@ -136,114 +164,105 @@
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">2. GrALaren defentsa presentziala eta publikoa da beti? *</h4>
+          <h4 class="mb-3">2/11 GrALaren defentsa presentziala eta publikoa da beti? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="1">Zuzena</div>
             <div class="answer-btn a2" data-value="wrong" data-q="1">Faltsua, mugikortasun-programetan beste unibertsitate batean egin behar da</div>
             <div class="answer-btn a3" data-value="correct" data-q="1">Faltsua, mugikortasun-programetan beste unibertsitate batean egin daiteke, aldez aurreko akordioa badago</div>
             <div class="answer-btn a4" data-value="wrong" data-q="1">Faltsua, ikaslea gaixo badago</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">3. GrAL egin eta defenda daiteke... *</h4>
+          <h4 class="mb-3">3/11 GrAL egin eta defenda daiteke... *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="2">Gaztelaniaz bakarrik</div>
             <div class="answer-btn a2" data-value="correct" data-q="2">Autonomia-erkidegoko edozein hizkuntza ofizialetan eta ikasketa-planean aurreikusitako hizkuntzetan</div>
             <div class="answer-btn a3" data-value="wrong" data-q="2">Atzerriko edozein hizkuntzatan, baldintzarik gabe</div>
             <div class="answer-btn a4" data-value="wrong" data-q="2">Epaimahaiak onartzen duen edozein hizkuntzatan</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">4. Nola matrikulatzen da GrAL? *</h4>
+          <h4 class="mb-3">4/11 Nola matrikulatzen da GrAL? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="correct" data-q="3">Irakasgai baten modura, matrikula-epe ofizialaren barruan, nahiz eta ikasleak irakasgai guztiak gaindituak ez izan</div>
             <div class="answer-btn a2" data-value="wrong" data-q="3">Modu independentean, matrikula orokorrarekin loturarik gabe</div>
             <div class="answer-btn a3" data-value="wrong" data-q="3">Irakasgai baten modura, matrikula-epe ofizialaren barruan, soilik ikasleak irakasgai guztiak gaindituak baditu</div>
             <div class="answer-btn a4" data-value="wrong" data-q="3">Automatikoaki, laugarren kurtsonara ailegatzen zarenean</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">5. Zenbat kreditu ematen ditu GrALak? *</h4>
+          <h4 class="mb-3">5/11 Zenbat kreditu ematen ditu GrALak? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="4">3 eta 6 ECTS artean</div>
             <div class="answer-btn a2" data-value="correct" data-q="4">6 eta 18 ECTS artean</div>
             <div class="answer-btn a3" data-value="wrong" data-q="4">18 eta 30 ECTS artean</div>
             <div class="answer-btn a4" data-value="wrong" data-q="4">4 eta 10 ECTS artean</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">6. Zenbat deialdietan aurkez daiteke GrALaren defentsara ikaslea ikasturte akademiko bakoitzean? *</h4>
+          <h4 class="mb-3">6/11 Zenbat deialdietan aurkez daiteke GrALaren defentsara ikaslea ikasturte akademiko bakoitzean? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="5">Deialdi ofizial bakarrean</div>
             <div class="answer-btn a2" data-value="correct" data-q="5">Bi deialdi ofizialetan</div>
             <div class="answer-btn a3" data-value="wrong" data-q="5">Lau deialdi ofizialetan</div>
             <div class="answer-btn a4" data-value="wrong" data-q="5">Hiru deialdi ofizialetan</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">7. GrAL bakoitza zuzendari baten gainbegiradapean garatu behar da, eta ezin da aurkeztu haren oniritzirik gabe. *</h4>
+          <h4 class="mb-3">7/11 GrAL bakoitza zuzendari baten gainbegiradapean garatu behar da, eta ezin da aurkeztu haren oniritzirik gabe. *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="correct" data-q="6">Zuzena</div>
             <div class="answer-btn a2" data-value="wrong" data-q="6">Faltsua</div>
             <div style="visibility:hidden"></div>
+            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">8. Zein da GrAL baten helburu nagusia? *</h4>
+          <h4 class="mb-3">8/11 Zein da GrAL baten helburu nagusia? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="correct" data-q="7">Ikaslearen gaitasunak ebaluatzea</div>
             <div class="answer-btn a2" data-value="wrong" data-q="7">Irakaslearen lan erraztasuna neurtzea</div>
             <div class="answer-btn a3" data-value="wrong" data-q="7">Emaitza akademikoak soilik jasotzea</div>
             <div class="answer-btn a4" data-value="wrong" data-q="7">Lanean jasoko dituzun lan motetara ohitzea</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">9. Nor da GrALen gaiaren aukeraketa onartzen duen pertsona nagusia? *</h4>
+          <h4 class="mb-3">9/11 Nor da GrALen gaiaren aukeraketa onartzen duen pertsona nagusia? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="8">Ikaslea</div>
             <div class="answer-btn a2" data-value="correct" data-q="8">Zuzendaria</div>
             <div class="answer-btn a3" data-value="wrong" data-q="8">Fakultateko dekanoa</div>
             <div class="answer-btn a4" data-value="wrong" data-q="8">Halabeharrez aukeratzen den irakasle bat</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">10. Ohorezko matrikularen aipamena: *</h4>
+          <h4 class="mb-3">10/11 Ohorezko matrikularen aipamena: *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="9">10eko notak lortzen dutenei ematen zaie beti</div>
             <div class="answer-btn a2" data-value="correct" data-q="9">Salbuespenezkoa da, eta fakultateak onartzen duenaren araberakoa</div>
             <div class="answer-btn a3" data-value="wrong" data-q="9">GrALean ez dago halakorik</div>
             <div class="answer-btn a4" data-value="wrong" data-q="9">Unibersitate pribatuetan soilik existitzen da</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
 
         <div class="question-card">
-          <h4 class="mb-3">11. Zenbat kidez osatuta dago epaimahaia? *</h4>
+          <h4 class="mb-3">11/11 Zenbat kidez osatuta dago epaimahaia? *</h4>
           <div class="kahoot-grid">
             <div class="answer-btn a1" data-value="wrong" data-q="10">1</div>
             <div class="answer-btn a2" data-value="wrong" data-q="10">2</div>
             <div class="answer-btn a3" data-value="correct" data-q="10">3</div>
             <div class="answer-btn a4" data-value="correct" data-q="10">4</div>
-            <div style="visibility:hidden"></div>
           </div>
         </div>
-    </div>
-
+      </div>
 
       <div id="nav-buttons" class="d-flex justify-content-between align-items-center">
         <button id="prev-btn" class="btn btn-light" disabled>⭠ Aurrekoa</button>
@@ -256,14 +275,201 @@
 
       <div id="summary" class="d-none mt-5 text-center">
         <h3 class="fw-bold">📊 Emaitzak</h3>
+        <h4 id="score" class="mt-3 display-4 fw-bold"></h4>
+        
         <div id="results" class="mt-4"></div>
-        <h4 id="score" class="mt-3"></h4>
 
         <button id="retry-btn" class="btn btn-outline-light" title="Berreskuratu quiz-a">🔁 Saiatu berriro!</button>
 
         <div class="gif-container mt-3">
-          <img id="result-gif" src="" alt="gif" />
+          <img id="result-gif" src="" alt="gif" class="d-none" />
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    // Variables de Estado
+    let currentStep = 0;
+    const cards = document.querySelectorAll('.question-card');
+    const totalQuestions = cards.length;
+    // Guardamos las respuestas del usuario: { indicePregunta: elementoBoton }
+    const userAnswers = {}; 
+
+    // Referencias DOM
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const startBtn = document.getElementById('start-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const finishBtn = document.getElementById('finish-btn');
+    const warningDiv = document.getElementById('warning');
+    const summaryDiv = document.getElementById('summary');
+    const resultsDiv = document.getElementById('results');
+    const scoreText = document.getElementById('score');
+    const resultGif = document.getElementById('result-gif');
+    const retryBtn = document.getElementById('retry-btn');
+    const navButtons = document.getElementById('nav-buttons');
+
+    // --- LOGICA DE INICIO ---
+    startBtn.addEventListener('click', () => {
+      startScreen.classList.add('d-none');
+      quizScreen.classList.remove('d-none');
+      updateView();
+    });
+
+    // --- LOGICA DE SELECCION (Mejorada visualmente) ---
+    document.querySelectorAll('.answer-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const qIndex = parseInt(btn.getAttribute('data-q'));
+        const parentGrid = btn.closest('.kahoot-grid');
+        
+        // 1. Quitar clase 'selected' a hermanos
+        parentGrid.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+        
+        // 2. Añadir clase 'selected' al clickado
+        btn.classList.add('selected');
+        
+        // 3. Añadir clase al padre para oscurecer los no seleccionados
+        parentGrid.classList.add('has-selection');
+
+        // 4. Guardar respuesta
+        userAnswers[qIndex] = btn;
+        
+        // Ocultar warning si se selecciona algo
+        warningDiv.classList.add('d-none');
+      });
+    });
+
+    // --- NAVEGACION ---
+    nextBtn.addEventListener('click', () => {
+      // Validar si ha respondido
+      if (!userAnswers[currentStep]) {
+        warningDiv.classList.remove('d-none');
+        warningDiv.innerText = "⚠️ Mesedez, aukeratu erantzun bat jarraitzeko!";
+        return;
+      }
+      warningDiv.classList.add('d-none');
+      
+      if (currentStep < totalQuestions - 1) {
+        currentStep++;
+        updateView();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      warningDiv.classList.add('d-none');
+      if (currentStep > 0) {
+        currentStep--;
+        updateView();
+      }
+    });
+
+    function updateView() {
+      // Mostrar tarjeta actual
+      cards.forEach((card, index) => {
+        if (index === currentStep) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+
+      // Controlar botones
+      prevBtn.disabled = (currentStep === 0);
+      
+      if (currentStep === totalQuestions - 1) {
+        nextBtn.classList.add('d-none');
+        finishBtn.classList.remove('d-none');
+      } else {
+        nextBtn.classList.remove('d-none');
+        finishBtn.classList.add('d-none');
+      }
+    }
+
+    // --- FINALIZAR Y RESULTADOS ---
+    finishBtn.addEventListener('click', () => {
+       // Validar última pregunta
+       if (!userAnswers[currentStep]) {
+        warningDiv.classList.remove('d-none');
+        warningDiv.innerText = "⚠️ Mesedez, aukeratu erantzun bat amaitzeko!";
+        return;
+      }
+
+      showResults();
+    });
+
+    function showResults() {
+      // Ocultar preguntas y navegación
+      document.getElementById('questions').classList.add('d-none');
+      navButtons.classList.add('d-none');
+      warningDiv.classList.add('d-none'); // Asegurar que no hay alertas
+
+      // Calcular nota y generar HTML detallado
+      let score = 0;
+      let resultsHTML = '';
+
+      cards.forEach((card, index) => {
+        const questionText = card.querySelector('h4').innerText;
+        const userAnswerBtn = userAnswers[index];
+        const isCorrect = userAnswerBtn.getAttribute('data-value') === 'correct';
+        
+        if (isCorrect) score++;
+
+        // Buscar texto de la respuesta correcta (para mostrar si falla)
+        // Buscamos dentro de la carta, el botón con data-value="correct"
+        const correctBtn = card.querySelector('.answer-btn[data-value="correct"]');
+        const correctAnswerText = correctBtn ? correctBtn.innerText : "Erantzun ezezaguna";
+
+        // Construir la tarjeta de resultado
+        resultsHTML += `
+          <div class="result-card ${isCorrect ? 'correct' : 'wrong'}">
+            <strong>${questionText}</strong>
+            <div class="mt-2">
+              ${isCorrect 
+                ? `<span class="feedback-correct">✅ Zuzena!</span> <span class="text-muted">(${userAnswerBtn.innerText})</span>` 
+                : `<span class="feedback-wrong">❌ Okerra.</span> <br> 
+                   <span class="small">Zure erantzuna: <s>${userAnswerBtn.innerText}</s></span><br>
+                   <span class="feedback-correct">👉 Erantzun zuzena: ${correctAnswerText}</span>`
+              }
+            </div>
+          </div>
+        `;
+      });
+
+      // Inyectar HTML
+      resultsDiv.innerHTML = resultsHTML;
+      scoreText.innerText = `${score} / ${totalQuestions}`;
+      summaryDiv.classList.remove('d-none');
+
+      // Gif lógica
+      resultGif.classList.remove('d-none');
+      if (score === totalQuestions) {
+        resultGif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; // Winner
+      } else if (score >= totalQuestions / 2) {
+        resultGif.src = "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"; // Not bad
+      } else {
+        resultGif.src = "https://media.giphy.com/media/26ybfv79tOrD9yKUU/giphy.gif"; // Fail
+      }
+    }
+
+    // --- REINICIAR ---
+    retryBtn.addEventListener('click', () => {
+      // Reset variables
+      currentStep = 0;
+      for (let key in userAnswers) delete userAnswers[key];
+      
+      // Limpiar UI
+      document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.kahoot-grid').forEach(g => g.classList.remove('has-selection'));
+      
+      summaryDiv.classList.add('d-none');
+      document.getElementById('questions').classList.remove('d-none');
+      navButtons.classList.remove('d-none');
+      
+      updateView();
+    });
+
+  </script>
+</body>
+</html>
